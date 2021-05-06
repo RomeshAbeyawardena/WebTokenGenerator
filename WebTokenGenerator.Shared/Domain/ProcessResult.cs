@@ -8,6 +8,16 @@ namespace WebTokenGenerator.Shared.Domain
 {
     public class ProcessResult
     {
+        public static ProcessResult Success()
+        {
+            return new ProcessResult(true);
+        }
+
+        public static ProcessResult Fail(Exception exception)
+        {
+            return new ProcessResult(exception);
+        }
+
         public ProcessResult(bool successful)
         {
             Successful = successful;

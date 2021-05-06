@@ -10,13 +10,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WebTokenGenerator.Core;
+using WebTokenGenerator.Shared.Abstractions;
+using WebTokenGenerator.Shared.Domain;
 
 namespace WebTokenGenerator.WinApp
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form, IMainForm
     {
-        public Form1()
+        private readonly IHttpService httpService;
+        public MainForm(IHttpService httpService)
         {
+            this.httpService = httpService;
+
             InitializeComponent();
         }
 
@@ -55,16 +60,14 @@ namespace WebTokenGenerator.WinApp
           Close();
         }
 
-        HttpService httpService;
+        
         Task task;
         private void startServerButton_Click(object sender, EventArgs e)
         {
-            if (httpService == null || !httpService.IsRunning)
+            if (!httpService.IsRunning)
             {
-                httpService = new HttpService(
-                    serverUrlTextBox.Text, HandleClientRequest);
                 serverUrlTextBox.Enabled = false;
-                task = httpService.Start();
+                task = httpService.Start(serverUrlTextBox.Text, HandleClientRequest);
                 startServerButton.Text = "Stop Server";
                 httpServiceBackgroundWorker.RunWorkerAsync();
             }
@@ -76,10 +79,32 @@ namespace WebTokenGenerator.WinApp
             }
         }
 
-        private Task HandleClientRequest(HttpListenerRequest request, 
+        private async Task<ProcessResult> HandleClientRequest(HttpListenerRequest request, 
             StreamWriter streamWriter)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var queryString = request.QueryString;
+
+                var issuer = queryString["issuer"];
+                var clientId = queryString["clientId"];
+                
+                if (string.IsNullOrWhiteSpace(issuer))
+                {
+                    throw new NullReferenceException("Issuer not specified");
+                }
+
+                if (string.IsNullOrWhiteSpace(clientId))
+                {
+                    throw new NullReferenceException("Client Id not specified");
+                }
+
+                return ProcessResult.Success();
+            }
+            catch(NullReferenceException exception)
+            {
+                return ProcessResult.Fail(exception);
+            }
         }
 
         private void HttpServiceBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)

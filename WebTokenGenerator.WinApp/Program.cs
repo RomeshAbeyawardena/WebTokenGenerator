@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WebTokenGenerator.Shared.Abstractions;
+using WebTokenGenerator.Core;
+using Microsoft.Extensions.Logging;
 
 namespace WebTokenGenerator.WinApp
 {
@@ -21,9 +23,11 @@ namespace WebTokenGenerator.WinApp
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.RegisterServiceDependencies(new[] { typeof(Program).Assembly, }, 
-                ServiceLifetime.Singleton, new[] { "Form" });
+            var serviceCollection = new ServiceCollection()
+                .RegisterServices()
+                .RegisterServiceDependencies(new[] { typeof(Program).Assembly, }, 
+                ServiceLifetime.Singleton, new[] { "Form" })
+                .AddSingleton(LoggerFactory.Create(options => options.AddDebug()));
             var services = serviceCollection.BuildServiceProvider();
 
             var form1 = services.GetRequiredService<IMainForm>();

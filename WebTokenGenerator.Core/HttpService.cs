@@ -21,7 +21,7 @@ namespace WebTokenGenerator.Core
         private Func<HttpListenerRequest, StreamWriter, Task<ProcessResult>> handleClientRequest;
         private CancellationTokenSource cancellationTokenSource;
         
-        public HttpService(ILogger logger)
+        public HttpService(ILogger<IHttpService> logger)
         {
             httpListener = new HttpListener();
             
@@ -38,7 +38,6 @@ namespace WebTokenGenerator.Core
                 cancellationTokenSource.Cancel();
             }
 
-            httpListener.Abort();
             httpListener.Stop();
         }
 
@@ -120,6 +119,7 @@ namespace WebTokenGenerator.Core
 
         public void Dispose()
         {
+            httpListener.Abort();
             GC.SuppressFinalize(this);
         }
 

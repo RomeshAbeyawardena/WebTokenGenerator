@@ -74,6 +74,7 @@ namespace WebTokenGenerator.WinApp
             else
             {
                 httpService.Stop();
+                statusStrip1.Items[0].Text = "Server not running";
                 startServerButton.Text = "Start Server";
                 serverUrlTextBox.Enabled = true;
             }

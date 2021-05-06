@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using WebTokenGenerator.Shared.Domain;
 
 namespace WebTokenGenerator.Core
 {
@@ -14,10 +15,10 @@ namespace WebTokenGenerator.Core
     {
         private List<Task> currentTasks = new List<Task>();
         private readonly HttpListener httpListener;
-        private readonly Func<HttpListenerRequest, StreamWriter, Task> handleClientRequest;
+        private readonly Func<HttpListenerRequest, StreamWriter, Task<ProcessResult>> handleClientRequest;
         private CancellationTokenSource cancellationTokenSource;
         public HttpService(string serverAndPort, 
-            Func<HttpListenerRequest, StreamWriter, Task> handleClientRequest)
+            Func<HttpListenerRequest, StreamWriter, Task<ProcessResult>> handleClientRequest)
         {
             httpListener = new HttpListener();
             httpListener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
@@ -75,7 +76,15 @@ namespace WebTokenGenerator.Core
             try
             {
                 var textWriter = new StreamWriter(context.Response.OutputStream);
-                await handleClientRequest.Invoke(context.Request, textWriter);
+
+                var result = await handleClientRequest
+                    .Invoke(context.Request, textWriter);
+
+                if (!result.Successful)
+                {
+                    throw result.Exception;
+                }
+
                 await textWriter.FlushAsync();
                 context.Response.StatusCode = 200;
                 context.Response.ContentType = "application/json";

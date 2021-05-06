@@ -246,7 +246,7 @@
             this.httpServiceBackgroundWorker.WorkerSupportsCancellation = true;
             this.httpServiceBackgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.HttpServiceBackgroundWorker_DoWork);
             // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -265,9 +265,9 @@
             this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.ShowIcon = false;
-            this.Text = "Web Token Generator";
+            this.Text = "JSON Web Token Generator";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(pictureBox1)).EndInit();

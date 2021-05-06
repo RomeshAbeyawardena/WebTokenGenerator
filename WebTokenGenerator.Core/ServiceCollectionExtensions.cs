@@ -10,7 +10,7 @@ namespace WebTokenGenerator.Core
         {
             return services
                 .AddLogging()
-                .RegisterServiceDependencies(new[] { typeof(ServiceCollectionExtensions).Assembly }, ServiceLifetime.Transient, new[] { "Service" });
+                .RegisterServiceDependencies(new[] { typeof(ServiceCollectionExtensions).Assembly }, ServiceLifetime.Transient, new[] { "Server" });
         }
     }
 }

@@ -18,7 +18,8 @@ namespace WebTokenGenerator.Core
         private List<Task> currentTasks = new List<Task>();
         private readonly HttpListener httpListener;
         private readonly ILogger logger;
-        private Func<HttpListenerRequest, StreamWriter, Task<ProcessResult>> handleClientRequest;
+        private Func<HttpListenerRequest, StreamWriter, Task<IProcessResult<ContentResult>>> handleClientRequest;
+        private Func<Exception, StreamWriter, Task<ContentResult>> handleClientException;
         private CancellationTokenSource cancellationTokenSource;
         
         public HttpService(ILogger<IHttpService> logger)
@@ -42,13 +43,15 @@ namespace WebTokenGenerator.Core
         }
 
         public async Task Start(string serverAndPort,
-            Func<HttpListenerRequest, StreamWriter, Task<ProcessResult>> handleClientRequest,
+            Func<HttpListenerRequest, StreamWriter, Task<IProcessResult<ContentResult>>> handleClientRequest,
+            Func<Exception, StreamWriter, Task<ContentResult>> handleClientException = default,
             AuthenticationSchemes authenticationSchemes = AuthenticationSchemes.Anonymous,
             CancellationToken cancellationToken = default)
         {
             httpListener.AuthenticationSchemes = authenticationSchemes;
             httpListener.Prefixes.Add(serverAndPort);
             this.handleClientRequest = handleClientRequest;
+            this.handleClientException = handleClientException;
 
             if (cancellationToken == default)
             {
@@ -63,12 +66,12 @@ namespace WebTokenGenerator.Core
             {
                 try
                 {
-                    Debug.WriteLine("Waiting for a connection");
+                    logger.LogTrace("Waiting for a connection");
                     var context = await httpListener.GetContextAsync();
 
                     var task = Task.Run(async () => await ProcessRequest(context));
 
-                    Debug.WriteLine($"processing connection request {task.Id}");
+                    logger.LogTrace($"processing connection request {task.Id}");
                     currentTasks.Add(task);
 
                     for (int i = 0; i < currentTasks.Count; i++)
@@ -76,11 +79,12 @@ namespace WebTokenGenerator.Core
                         var currentTask = currentTasks[i];
                         if (currentTask.IsCompleted)
                         {
-                            Debug.WriteLine($"removed task {currentTask.Id}");
+                            logger.LogTrace($"removed task {currentTask.Id}");
                             currentTasks.Remove(currentTask);
                         }
                     }
-                    Debug.WriteLine("EOL within while loop");
+
+                    logger.LogTrace("EOL within while loop");
                 }
                 catch (HttpListenerException exception)
                 {
@@ -92,27 +96,41 @@ namespace WebTokenGenerator.Core
 
         private async Task ProcessRequest(HttpListenerContext context)
         {
+            IProcessResult<ContentResult> response = default;
+            var textWriter = new StreamWriter(context.Response.OutputStream);
             try
             {
-                var textWriter = new StreamWriter(context.Response.OutputStream);
-
-                var result = await handleClientRequest
+                response = await handleClientRequest
                     .Invoke(context.Request, textWriter);
 
-                if (!result.Successful)
+                if (!response.Successful)
                 {
-                    throw result.Exception;
+                    throw response.Exception;
                 }
 
                 await textWriter.FlushAsync();
-                context.Response.StatusCode = 200;
-                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = response.Result.StatusCode;
+                context.Response.StatusDescription = response.Result.StatusDescription;
+                context.Response.ContentType = response.Result.ContentType;
                 context.Response.Close();
             }
             catch(Exception exception)
             {
-                context.Response.StatusCode = 500;
-                context.Response.StatusDescription = exception.Message;
+                var result = await (handleClientException?.Invoke(exception, textWriter) 
+                    ?? Task.FromResult<ContentResult>(default));
+
+                context.Response.StatusCode = response?.Result.StatusCode 
+                    ?? result?.StatusCode 
+                    ?? 500;
+
+                context.Response.StatusDescription = response?.Result?.StatusDescription 
+                    ?? result?.StatusDescription 
+                    ?? exception.Message;
+
+                context.Response.ContentType = response?.Result?.ContentType 
+                    ?? result?.ContentType 
+                    ?? string.Empty;
+
                 context.Response.Close();
             }
         }

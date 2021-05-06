@@ -80,7 +80,7 @@ namespace WebTokenGenerator.WinApp
             }
         }
 
-        private async Task<ProcessResult> HandleClientRequest(HttpListenerRequest request, 
+        private async Task<IProcessResult<ContentResult>> HandleClientRequest(HttpListenerRequest request, 
             StreamWriter streamWriter)
         {
             try
@@ -100,11 +100,15 @@ namespace WebTokenGenerator.WinApp
                     throw new NullReferenceException("Client Id not specified");
                 }
 
-                return ProcessResult.Success();
+                return ProcessResult.Success(new ContentResult { 
+                    ContentType = "application/json", 
+                    StatusCode = 200 });
             }
             catch(NullReferenceException exception)
             {
-                return ProcessResult.Fail(exception);
+                return ProcessResult.Fail(exception, new ContentResult {
+                    StatusCode = 400
+                });
             }
         }
 

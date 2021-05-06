@@ -13,7 +13,8 @@ namespace WebTokenGenerator.Shared.Abstractions
     public interface IHttpService : IDisposable
     {
         Task Start(string serverAndPort,
-            Func<HttpListenerRequest, StreamWriter, Task<ProcessResult>> handleClientRequest,
+            Func<HttpListenerRequest, StreamWriter, Task<IProcessResult<ContentResult>>> handleClientRequest,
+            Func<Exception, StreamWriter, Task<ContentResult>> handleClientException = default,
             AuthenticationSchemes authenticationSchemes = AuthenticationSchemes.Anonymous,
             CancellationToken cancellationToken = default);
         bool IsRunning { get; }

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace WinApp.Components
+namespace WebTokenGenerator.WinApp.Components
 {
     public class GradientButton : Button
     {

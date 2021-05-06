@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WebTokenGenerator.Core;
 
-namespace WinApp
+namespace WebTokenGenerator.WinApp
 {
     public partial class Form1 : Form
     {

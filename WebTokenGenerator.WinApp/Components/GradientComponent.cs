@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WebTokenGenerator.Shared.Components;
 
-namespace WinApp.Components
+namespace WebTokenGenerator.WinApp.Components
 {
     public class GradientComponent<TControl>
         where TControl : Control, IGradientComponent

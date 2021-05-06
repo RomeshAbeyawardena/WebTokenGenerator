@@ -5,7 +5,7 @@ VisualStudioVersion = 16.6.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebTokenGenerator.Core", "WebTokenGenerator.Core\WebTokenGenerator.Core.csproj", "{32FA0ED2-1DBE-41DF-9B16-A13A3BF2E566}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinApp", "WinApp\WinApp.csproj", "{C3957E11-FC96-44F2-A80C-FFAFF0899453}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinApp", "WebTokenGenerator.WinApp\WebTokenGenerator.WinApp.csproj", "{C3957E11-FC96-44F2-A80C-FFAFF0899453}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebTokenGenerator.Shared", "WebTokenGenerator.Shared\WebTokenGenerator.Shared.csproj", "{398DBF6C-8B88-43C5-AEC3-7C58BEE91E79}"
 EndProject

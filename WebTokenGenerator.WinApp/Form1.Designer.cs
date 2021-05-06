@@ -1,4 +1,4 @@
-﻿namespace WinApp
+﻿namespace WebTokenGenerator.WinApp
 {
     partial class Form1
     {
@@ -36,12 +36,12 @@
             System.Windows.Forms.Label label3;
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.serverUrlTextBox = new System.Windows.Forms.TextBox();
-            this.quitButton = new WinApp.Components.GradientButton();
-            this.startServerButton = new WinApp.Components.GradientButton();
+            this.quitButton = new WebTokenGenerator.WinApp.Components.GradientButton();
+            this.startServerButton = new WebTokenGenerator.WinApp.Components.GradientButton();
             this.advancedSettingsPanel = new System.Windows.Forms.Panel();
             this.jwtPayloadTextbox = new System.Windows.Forms.TextBox();
             this.jwTHeaderTextbox = new System.Windows.Forms.TextBox();
-            this.advanceSettingsButton = new WinApp.Components.GradientButton();
+            this.advanceSettingsButton = new WebTokenGenerator.WinApp.Components.GradientButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.httpServiceBackgroundWorker = new System.ComponentModel.BackgroundWorker();

@@ -17,8 +17,8 @@ namespace WebTokenGenerator.WinApp
 {
     public partial class MainForm : Form, IMainForm
     {
-        private readonly IHttpService httpService;
-        public MainForm(IHttpService httpService)
+        private readonly IHttpServer httpService;
+        public MainForm(IHttpServer httpService)
         {
             this.httpService = httpService;
 

@@ -13,7 +13,7 @@ using WebTokenGenerator.Shared.Domain;
 
 namespace WebTokenGenerator.Core
 {
-    public class HttpService : IHttpService
+    public class HttpServer : IHttpServer
     {
         private List<Task> currentTasks = new List<Task>();
         private readonly HttpListener httpListener;
@@ -22,7 +22,7 @@ namespace WebTokenGenerator.Core
         private Func<Exception, StreamWriter, Task<ContentResult>> handleClientException;
         private CancellationTokenSource cancellationTokenSource;
         
-        public HttpService(ILogger<IHttpService> logger)
+        public HttpServer(ILogger<IHttpServer> logger)
         {
             httpListener = new HttpListener();
             

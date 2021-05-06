@@ -10,7 +10,7 @@ using WebTokenGenerator.Shared.Domain;
 
 namespace WebTokenGenerator.Shared.Abstractions
 {
-    public interface IHttpService : IDisposable
+    public interface IHttpServer : IDisposable
     {
         Task Start(string serverAndPort,
             Func<HttpListenerRequest, StreamWriter, Task<IProcessResult<ContentResult>>> handleClientRequest,

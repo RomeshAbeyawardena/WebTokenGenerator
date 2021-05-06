@@ -59,7 +59,7 @@ namespace WinApp
         Task task;
         private void startServerButton_Click(object sender, EventArgs e)
         {
-            if (!httpService.IsRunning)
+            if (httpService == null || !httpService.IsRunning)
             {
                 httpService = new HttpService(
                     serverUrlTextBox.Text, HandleClientRequest);
@@ -71,6 +71,7 @@ namespace WinApp
             else
             {
                 httpService.Stop();
+                startServerButton.Text = "Start Server";
                 serverUrlTextBox.Enabled = true;
             }
         }

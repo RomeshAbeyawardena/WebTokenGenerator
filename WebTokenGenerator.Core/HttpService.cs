@@ -72,12 +72,21 @@ namespace WebTokenGenerator.Core
 
         private async Task ProcessRequest(HttpListenerContext context)
         {
-            context.Response.StatusCode = 200;
-            context.Response.ContentType = "application/json";
-            var textWriter = new StreamWriter(context.Response.OutputStream);
-            await handleClientRequest.Invoke(context.Request, textWriter);
-            await textWriter.FlushAsync();
-            context.Response.Close();
+            try
+            {
+                var textWriter = new StreamWriter(context.Response.OutputStream);
+                await handleClientRequest.Invoke(context.Request, textWriter);
+                await textWriter.FlushAsync();
+                context.Response.StatusCode = 200;
+                context.Response.ContentType = "application/json";
+                context.Response.Close();
+            }
+            catch(Exception exception)
+            {
+                context.Response.StatusCode = 500;
+                context.Response.StatusDescription = exception.Message;
+                context.Response.Close();
+            }
         }
 
         public void Dispose()

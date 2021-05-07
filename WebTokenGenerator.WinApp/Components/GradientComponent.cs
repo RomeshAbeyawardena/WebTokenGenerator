@@ -13,44 +13,20 @@ namespace WebTokenGenerator.WinApp.Components
     public class GradientComponent<TControl>
         where TControl : Control, IGradientComponent
     {
-        public GradientComponent(TControl control)
+        private readonly Func<Rectangle, Color, Color, float, bool, LinearGradientBrush> linearGradientBrush;
+
+        public GradientComponent(TControl control,
+            Func<Rectangle, Color, Color, float, bool, LinearGradientBrush> linearGradientBrush = default)
         {
             BaseControl = control;
-        }
-
-        private float linearGradientAngle = 90;
-        private Color borderColour = SystemColors.ButtonShadow;
-        private Color backgroundColour1 = SystemColors.Control;
-        private Color backgroundColour2 = SystemColors.Window;
-
-        public Color BorderColour
-        {
-            get => borderColour;
-            set => UpdateProperty(ref borderColour, value);
-        }
-
-        public float Angle
-        {
-            get => linearGradientAngle;
-            set => UpdateProperty(ref linearGradientAngle, value);
-        }
-
-        public Color BackgroundColour1
-        {
-            get => backgroundColour1;
-            set => UpdateProperty(ref backgroundColour1, value);
-        }
-
-        public Color BackgroundColour2
-        {
-            get => backgroundColour2;
-            set => UpdateProperty(ref backgroundColour2, value);
+            this.linearGradientBrush = linearGradientBrush;
         }
 
         public LinearGradientBrush GetLinearGradientBrush(Rectangle clipRectangle,
             Color backgroundColour1, Color backgroundColour2, float angle, bool isScalable)
         {
-            return new LinearGradientBrush(clipRectangle, backgroundColour1, 
+            return linearGradientBrush?.Invoke(clipRectangle, backgroundColour1, backgroundColour2, angle, isScalable) 
+                ?? new LinearGradientBrush(clipRectangle, backgroundColour1, 
                 backgroundColour2, angle, isScalable);
         }
 
@@ -63,16 +39,18 @@ namespace WebTokenGenerator.WinApp.Components
         {
             var clipRectangle = pevent.ClipRectangle;
             var linearGradientBrush = GetLinearGradientBrush(clipRectangle,
-                BackgroundColour1, BackgroundColour2, Angle, true);
+                BaseControl.BackgroundColour1, BaseControl.BackgroundColour2, 
+                BaseControl.Angle, true);
 
             pevent.Graphics.FillRectangle(linearGradientBrush, clipRectangle);
 
             var rect = new Rectangle(clipRectangle.Location, new Size(clipRectangle.Width - 1, clipRectangle.Height - 1));
 
             pevent.Graphics
-                .DrawRectangle(GetBorderPen(BorderColour), rect) ;
+                .DrawRectangle(GetBorderPen(BaseControl.BorderColour), rect) ;
 
-            TextRenderer.DrawText(pevent.Graphics, BaseControl.Text, BaseControl.Font, clipRectangle, BaseControl.ForeColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+            TextRenderer.DrawText(pevent.Graphics, BaseControl.Text, BaseControl.Font, clipRectangle, 
+                BaseControl.ForeColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
         }
 
         public void UpdateProperty<T>(ref T backingProperty, T newValue)

@@ -19,6 +19,12 @@ namespace WebTokenGenerator.WinApp.Components
         private bool mouseDown = false;
         private GradientComponent<GradientButton> gradientComponent;
 
+        public GradientButton()
+            : this(null)
+        {
+
+        }
+
         public GradientButton(GradientComponent<GradientButton> gradientComponent = default)
         {
             this.gradientComponent = gradientComponent 
@@ -44,10 +50,17 @@ namespace WebTokenGenerator.WinApp.Components
             base.OnMouseUp(mevent);
         }
 
+        protected override void OnPaintBackground(PaintEventArgs pevent)
+        {
+        }
+
         protected override void OnPaint(PaintEventArgs pevent)
         {
             gradientComponent
                 .PaintGradientComponent(pevent);
+
+            TextRenderer.DrawText(pevent.Graphics, Text, Font, pevent.ClipRectangle,
+                ForeColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
         }
 
         public Color BorderColour { 
